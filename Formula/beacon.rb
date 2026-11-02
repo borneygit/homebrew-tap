@@ -26,14 +26,16 @@ class Beacon < Formula
 
   def install
     ENV["GOTOOLCHAIN"] = "auto"
+    hooks_dir = buildpath/"cli/beacon-hooks"
+    cli_dir = buildpath/"cli/beacon"
 
     # cli/beacon embeds the hooks binary, so hooks is built and placed first.
-    system "go", "build", "-trimpath", "-o", "beacon-hooks", ".", chdir: "cli/beacon-hooks"
-    cp "cli/beacon-hooks/beacon-hooks", "cli/beacon/internal/embedded/hooks.bin"
-    system "go", "build", "-trimpath", "-o", "beacon", ".", chdir: "cli/beacon"
+    system "go", "build", "-trimpath", "-o", "beacon-hooks", ".", chdir: hooks_dir.to_s
+    cp hooks_dir/"beacon-hooks", cli_dir/"internal/embedded/hooks.bin"
+    system "go", "build", "-trimpath", "-o", "beacon", ".", chdir: cli_dir.to_s
 
-    bin.install "cli/beacon/beacon"
-    bin.install "cli/beacon-hooks/beacon-hooks"
+    bin.install cli_dir/"beacon"
+    bin.install hooks_dir/"beacon-hooks"
     resource("otelcol").stage { bin.install "beacon-otelcol" }
   end
 
