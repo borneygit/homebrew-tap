@@ -1,15 +1,15 @@
 # Patched build of Beacon: upstream v1.3.52 (e098990) plus one fix.
 #
-# borneygit/agent-beacon 798efd8 reads a Pi session's RFC3339 header timestamp as a whole
+# borneygit/agent-beacon 8e308b79 reads a Pi session's RFC3339 header timestamp as a whole
 # string. Before it, the leading "2026" was read as epoch seconds, so session.started
 # became 1970-01-01T00:33:46Z, every polled session's trace started in 1970, and the local
 # history's retention deleted those sessions on the next ingest.
 class Beacon < Formula
   desc "Open-source endpoint agent for local AI runtime telemetry (patched build)"
   homepage "https://github.com/borneygit/agent-beacon"
-  url "https://github.com/borneygit/agent-beacon/archive/798efd8c7674a3787386cfb9177a517eaf5d5163.tar.gz"
+  url "https://github.com/borneygit/agent-beacon/archive/refs/tags/v1.3.52-fix1.tar.gz"
   version "1.3.52-fix1"
-  sha256 "7e604b3533ecbb0791e38d41ddc1ad725be42685730bbe54dc474e39461eaac6"
+  sha256 "5142a3615de8261889dcb041b9daa4d91e871534c0e753a9328dc808b18f0821"
   license "MIT"
 
   depends_on "go" => :build
@@ -32,7 +32,7 @@ class Beacon < Formula
     # The project's own Makefile builds the hooks binary and embeds it in the CLI, which is
     # the order the CLI needs. The version stamped into the binary is upstream's, so version
     # comparisons and the self-updater's health check keep working; the commit names the build.
-    system "sh", "-c", "cd cli/beacon && make build VERSION=1.3.52 GIT_COMMIT=798efd8"
+    system "sh", "-c", "cd cli/beacon && make build VERSION=1.3.52 GIT_COMMIT=8e308b79"
 
     bin.install "cli/beacon/beacon"
     bin.install "cli/beacon-hooks/beacon-hooks"
@@ -41,7 +41,8 @@ class Beacon < Formula
 
   def caveats
     <<~EOS
-      Patched build: Beacon 1.3.52 with borneygit/agent-beacon 798efd8, which keeps a Pi
+      Patched build: Beacon 1.3.52 with borneygit/agent-beacon 8e308b79 (tag v1.3.52-fix1),
+      which keeps a Pi
       session's real start time so polled sessions stay in the local history.
 
       Not upstream, so check the build after any "brew upgrade": asymptote-labs/tap ships an
